@@ -1,39 +1,50 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.models as models
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Define your custom CNN model
-class MyCNN(nn.Module):
-    def __init__(self):
-        super(MyCNN, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, padding=1)
-        self.relu = nn.ReLU()
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(16 * 56 * 56, 128)
-        self.fc2 = nn.Linear(128, 10)  # Assuming 10 classes for classification
 
-    def forward(self, x):
-        x = self.pool(self.relu(self.conv1(x)))
-        x = x.view(-1, 16 * 56 * 56)
-        x = self.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
 
-# Load your dataset and preprocess it
 
-# Instantiate the model
-model = MyCNN()
 
-# Define loss function and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+def load_data(file_path):
+    """Load data from a CSV file."""
+    try:
+        data = pd.read_excel(file_path)
+        return data
+    except FileNotFoundError:
+        print("File not found. Please provide a valid file path.")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
-# Train the model
-for epoch in range(num_epochs):
-    # Training loop
+def analyze_data(data):
+    """Perform basic data analysis."""
+    if data is not None:
+        # Display summary statistics
+        print("Summary Statistics:")
+        print(data.describe())
 
-# Evaluate the model on validation data
+        # Plot histograms for numeric columns
+        print("Histograms:")
+        for col in data.select_dtypes(include=['int', 'float']):
+            data[col].plot(kind='hist', bins=10)
+            plt.title(col)
+            plt.xlabel(col)
+            plt.ylabel('Frequency')
+            plt.show()
+        
+        # Plot bar plot for the class label (string type)
+        class_label_counts = data['Class'].value_counts()
+        class_label_counts.plot(kind='bar')
+        plt.title('Class Label Distribution')
+        plt.xlabel('Class Label')
+        plt.ylabel('Count')
+        plt.show()
 
-# Save the trained model
-torch.save(model.state_dict(), 'my_cnn_model.pth')
+def main():
+    file_path = "Assignment2/Assignment2.xlsx"
+    data = load_data(file_path)
+    analyze_data(data)
+
+if __name__ == "__main__":
+    main()
