@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torchvision.models as models
 
 # Define your custom CNN model
 class MyCNN(nn.Module):
